@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Osca Movie Online</title>
+	<!-- Bootstrap CSS -->
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+		integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<!-- Bootstrap CSS -->
+
+
+	<link href="https://cdn.datatables.net/autofill/2.5.1/css/autoFill.dataTables.min.css" rel="stylesheet"
+		type="text/css" />
+	<link href="https://cdn.datatables.net/buttons/2.3.2/css/buttons.dataTables.min.css" rel="stylesheet"
+		type="text/css" />
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+		integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+		crossorigin="anonymous"></script>
+
+	<script src="https://code.jquery.com/jquery-3.6.3.min.js"
+		integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+	<script type="text/javascript"
+		src="https://cdn.datatables.net/autofill/2.5.1/js/dataTables.autoFill.min.js"></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.2/js/dataTables.buttons.min.js"></script>
+</head>
+
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/">Osca Movie</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNavDropdown">
+            <ul class="navbar-nav">
+                <!-- Movie Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Movie
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" href="/">List all movie</a></li>
+                        <li><a class="dropdown-item" href="/searchmovie">Search movie by Genre</a></li>
+                        <li sec:authorize="hasRole('ROLE_ADMIN')"><a class="dropdown-item" href="/addmovie" id="addNewMovie">Add new movie</a></li>
+                    </ul>
+                </li>
+
+                <!-- Maintenance Menu -->
+                <li sec:authorize="hasRole('ROLE_ADMIN')" class="nav-item dropdown" id="maintenanceDropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMaintenanceLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Maintenance
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMaintenanceLink">
+                        <li><a class="dropdown-item" href="#">Genre maintenance</a></li>
+                        <li><a class="dropdown-item" href="#">User maintenance</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            
+        </div>
+        <!-- Sign Out -->
+            <form class="d-flex" name="logoutForm" th:action="@{/logout}" method="post">
+                <a style="color: white; text-decoration: none;" href="javascript: document.logoutForm.submit()" class="nav-link">Sign out</a>
+            </form>
+    </div>
+</nav>
+
+	<br><br>
+	<!-- forms -->
+	<div class="container-fluid p-5">
+		<div class="row justify-content-center">
+			<!-- <div class="col-md-5"> -->
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<h3 class="text-center text-success">Add Movie Details</h3>
+
+
+						<form id="frmStudent" name="frmStudent">
+							<div class="mb-3">
+								<label for="exampleInputEmail1" class="form-label">Movie Name
+								</label> <input type="text" class="form-control" id="name"
+									aria-describedby="emailHelp" placeholder="Enter movie name here"
+									name="name" required="required"> <!-- th:errorClass="is-invalid" -->
+									
+
+							</div>
+							<div class="mb-3">
+								<label for="exampleInputEmail1" class="form-label">Movie Description
+									address</label> <input type="email" class="form-control"
+									aria-describedby="emailHelp"
+									placeholder="Enter movie description here" id="movieDescription" name="movieDescription"
+									required="required">
+									
+
+							</div>
+							<div class="mb-3">
+								<label for="exampleInputEmail1" class="form-label">Movie Cast </label> <input type="text" class="form-control"
+									aria-describedby="emailHelp"
+									placeholder="Enter movie cast here" id="cast"
+									name="cast">
+									
+
+							</div>
+							
+							<div class="mb-3">
+								<label for="genre" class="form-label">Genre</label>
+								<select class="form-control" id="genre_edit" name="genre_edit">
+									<!-- Options will be added here dynamically -->
+								</select>
+								<input type="hidden" class="form-control" id="genreId" name="genreId">
+							</div>
+							<div class="mb-3">
+								<label for="exampleInputEmail1" class="form-label">Genre Description</label> <input
+									type="text" class="form-control" aria-describedby="emailHelp" id="genreDescription"
+									name="genreDescription" required="required" readonly>
+
+							</div>
+
+
+							<button type="button" class="btn btn-primary btn-success" id="save"
+								onclick="addMovie()">Submit</button>
+							<!-- <button type="button" class="btn btn-primary" id="" onclick="">Add</button> -->
+						</form>
+					</div>
+				</div>
+			</div>
+	<script>
+	$(document).ready(function () {
+		populateGenres();
+		function populateGenres() {
+			$.ajax({
+				type: "GET",
+				url: "http://localhost:8080/genre/", 
+				success: function (data) {
+					var genreSelect = $('#genre_edit');
+					genreSelect.empty(); // Remove any existing options
+
+					data.forEach(function (genre) {
+						genreSelect.append($('<option></option>').attr('value', genre.id).text(genre.name));
+					});
+					$('#genre_edit').change(function () {
+						var selectedGenreId = $(this).val();
+						var selectedGenre = data.find(genre => genre.id.toString() === selectedGenreId);
+						if (selectedGenre) {
+							$('#genreDescription').val(selectedGenre.description || '');
+						} else {
+							$('#genreDescription').val(''); // Clear description if no genre is found
+						}
+					});
+				},
+				error: function (request, status, error) {
+					console.log("Error fetching genres:", status, error);
+				}
+			});
+		}
+
+	});
+	function addMovie() {
+		event.preventDefault();
+		let movie = {
+			name: $('#name').val(),
+			movieDescription: $('#movieDescription').val(),
+			cast: $('#cast').val(),
+			genreId: $('#genre_edit').val()
+		};
+
+		$.ajax({
+			type: "POST",
+			contentType: "application/json",
+			url: "http://localhost:8081/addmovie", // Update to your endpoint for adding movies
+			data: JSON.stringify(movie),
+			success: function (response) {
+				console.log(response);
+				alert("Movie had added successfully");
+				window.location.href = '/';
+			},
+			error: function (error) {
+				console.log(error);
+				// Handle error
+			}
+		});
+	}
+
+</script>			
+			
+			
+	<input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+	
+	
+
+	
+	
+</body>
+
+</html>
